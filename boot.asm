@@ -48,6 +48,9 @@ start:
     or eax, 1 << 16
     mov cr0, eax
 
+    ; tell the hardware about the GDT (global descriptor table)
+    lgdt [gdt64.pointer]
+
     ; Hello, world!
     mov word [0xb8000], 0x0248 ; H
     mov word [0xb8002], 0x0265 ; e
@@ -74,3 +77,14 @@ p3_table:
     resb 4096
 p2_table:
     resb 4096
+
+section .rodata
+gdt64:
+    dq 0
+.code: equ $ - gdt64
+    dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53)
+.data: equ $ - gdt64
+    dq (1<<44) | (1<<47) | (1<<41)
+.pointer:
+    dw .pointer - gdt64 - 1
+    dq gdt64
