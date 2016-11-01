@@ -51,6 +51,15 @@ start:
     ; tell the hardware about the GDT (global descriptor table)
     lgdt [gdt64.pointer]
 
+    ; update selectors
+    mov ax, gdt64.data
+    mov ss, ax
+    mov ds, ax
+    mov es, ax
+
+    ; jump to long mode!
+    jmp gdt64.code:long_mode_start
+
     ; Hello, world!
     mov word [0xb8000], 0x0248 ; H
     mov word [0xb8002], 0x0265 ; e
@@ -88,3 +97,10 @@ gdt64:
 .pointer:
     dw .pointer - gdt64 - 1
     dq gdt64
+
+section .text
+bits 64
+long_mode_start:
+    mov rax, 0x2f592f412f4b2f4f
+    mov qword [0xb8000], rax
+    hlt
