@@ -1,2 +1,4 @@
 building-the-tools
 build
+target
+Cargo.lock
